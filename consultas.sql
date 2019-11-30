@@ -5,12 +5,20 @@ where remetente = 'user1'
 and origem in ('Web', 'App');
 
 --Consulta questão 5
+create materialized view vw_mensagens_recebidas as 
 select * 
-from mensagens 
-where remetente = 'user1' 
-and origem 
-in ('Web', 'App') 
-order by destinatario desc;
+from mensagens
+where remetente is not null
+and data_hora is not null
+and origem is not null
+and destinatario is not null
+and tipo is not null
+primary key ((remetente),data_hora,destinatario,origem,tipo)
+WITH CLUSTERING ORDER BY (destinatario desc);
+
+select * 
+from vw_mensagens_recebidas 
+where remetente = 'user1';
 
 --Consulta questão 6
 create materialized view vw_mensagens_origem as 
@@ -58,13 +66,13 @@ and remetente is not null
 and data_hora is not null
 and origem is not null
 and tipo is not null
-primary key ((destinatario, remetente),data_hora,origem,tipo);
+primary key ((destinatario, remetente),data_hora,origem,tipo)
+WITH CLUSTERING ORDER BY (data_hora desc);
 
 select * 
 from vw_mensagens_trocadas 
-where destinatario = 'user4'
-and remetente = 'user1'
-order by data_hora desc 
+where destinatario in ('user4', 'user1')
+and remetente in ('user1', 'user4')
 limit 10;
 
 --Consulta questão 10
