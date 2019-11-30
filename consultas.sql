@@ -48,3 +48,52 @@ from vw_mensagens_enviadas
 where destinatario = 'user6' 
 order by data_hora desc 
 limit 10;
+
+--Consulta questão 9
+create materialized view vw_mensagens_trocadas as 
+select * 
+from mensagens
+where destinatario is not null
+and remetente is not null
+and data_hora is not null
+and origem is not null
+and tipo is not null
+primary key ((destinatario, remetente),data_hora,origem,tipo);
+
+select * 
+from vw_mensagens_trocadas 
+where destinatario = 'user4'
+and remetente = 'user1'
+order by data_hora desc 
+limit 10;
+
+--Consulta questão 10
+create materialized view vw_ultimas_mensagens as 
+select * 
+from mensagens
+where remetente is not null
+and data_hora is not null
+and origem is not null
+and destinatario is not null
+and tipo is not null
+primary key (remetente, data_hora,origem,destinatario,tipo)
+WITH CLUSTERING ORDER BY (data_hora desc);
+
+select distinct remetente
+from vw_ultimas_mensagens;
+
+--Questão 11
+create materialized view vw_mensagens_tipos as 
+select * 
+from mensagens
+where remetente is not null
+and data_hora is not null
+and origem is not null
+and destinatario is not null
+and tipo is not null
+primary key ((destinatario, tipo), data_hora,origem,remetente)
+WITH CLUSTERING ORDER BY (data_hora desc);
+
+select * from vw_mensagens_tipos
+where destinatario = 'user5'
+and tipo = 'video';
